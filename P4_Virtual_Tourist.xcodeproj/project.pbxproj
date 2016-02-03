@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		C95359201C618F1400A9054E /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C953591F1C618F1400A9054E /* DetailsViewController.swift */; };
+		C95359221C619E4100A9054E /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95359211C619E4100A9054E /* Client.swift */; };
+		C95359241C619E7400A9054E /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95359231C619E7400A9054E /* CollectionViewCell.swift */; };
+		C95359261C61A43900A9054E /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95359251C61A43900A9054E /* Pin.swift */; };
+		C95359281C61A44000A9054E /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95359271C61A44000A9054E /* Photo.swift */; };
 		C9A5940B1C0BD8A7006347F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A5940A1C0BD8A7006347F9 /* AppDelegate.swift */; };
 		C9A5940D1C0BD8A7006347F9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A5940C1C0BD8A7006347F9 /* ViewController.swift */; };
 		C9A594101C0BD8A7006347F9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9A5940E1C0BD8A7006347F9 /* Main.storyboard */; };
@@ -36,6 +40,10 @@
 
 /* Begin PBXFileReference section */
 		C953591F1C618F1400A9054E /* DetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
+		C95359211C619E4100A9054E /* Client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		C95359231C619E7400A9054E /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		C95359251C61A43900A9054E /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pin.swift; sourceTree = "<group>"; };
+		C95359271C61A44000A9054E /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		C9A594071C0BD8A7006347F9 /* P4_Virtual_Tourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = P4_Virtual_Tourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A5940A1C0BD8A7006347F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C9A5940C1C0BD8A7006347F9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -99,13 +107,17 @@
 		C9A594091C0BD8A7006347F9 /* P4_Virtual_Tourist */ = {
 			isa = PBXGroup;
 			children = (
-				C9A5940A1C0BD8A7006347F9 /* AppDelegate.swift */,
-				C9A5940C1C0BD8A7006347F9 /* ViewController.swift */,
 				C9A5940E1C0BD8A7006347F9 /* Main.storyboard */,
 				C9A594111C0BD8A7006347F9 /* Assets.xcassets */,
+				C9A5940A1C0BD8A7006347F9 /* AppDelegate.swift */,
+				C95359211C619E4100A9054E /* Client.swift */,
+				C95359231C619E7400A9054E /* CollectionViewCell.swift */,
+				C953591F1C618F1400A9054E /* DetailsViewController.swift */,
 				C9A594131C0BD8A7006347F9 /* LaunchScreen.storyboard */,
 				C9A594161C0BD8A7006347F9 /* Info.plist */,
-				C953591F1C618F1400A9054E /* DetailsViewController.swift */,
+				C95359251C61A43900A9054E /* Pin.swift */,
+				C95359271C61A44000A9054E /* Photo.swift */,
+				C9A5940C1C0BD8A7006347F9 /* ViewController.swift */,
 			);
 			path = P4_Virtual_Tourist;
 			sourceTree = "<group>";
@@ -259,8 +271,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C95359281C61A44000A9054E /* Photo.swift in Sources */,
+				C95359241C619E7400A9054E /* CollectionViewCell.swift in Sources */,
 				C9A5940D1C0BD8A7006347F9 /* ViewController.swift in Sources */,
 				C9A5940B1C0BD8A7006347F9 /* AppDelegate.swift in Sources */,
+				C95359261C61A43900A9054E /* Pin.swift in Sources */,
+				C95359221C619E4100A9054E /* Client.swift in Sources */,
 				C95359201C618F1400A9054E /* DetailsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class ViewController: UIViewController, MKMapViewDelegate {
 
@@ -24,6 +25,17 @@ class ViewController: UIViewController, MKMapViewDelegate {
         self.longPressGesture.minimumPressDuration = 0.5
         self.longPressGesture.addTarget(self, action: "handleLongPress:")
         self.view.addGestureRecognizer(self.longPressGesture)
+        
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = appDelegate.managedObjectContext
+        print("context has changes to save: \(context.hasChanges)")
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        for annotation in mapView.selectedAnnotations {
+            mapView.deselectAnnotation(annotation, animated: false)
+        }
     }
     
     func handleLongPress(gesture: UILongPressGestureRecognizer) {
@@ -35,16 +47,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         let touchLocation = gesture.locationInView(self.view)
         
-        print(touchLocation.x)
-        print(touchLocation.y)
-        
-        
         var coordinates:CLLocationCoordinate2D = CLLocationCoordinate2D()
         coordinates = mapView.convertPoint(touchLocation, toCoordinateFromView: self.view)
         
         let point = MKPointAnnotation()
         point.coordinate = coordinates
-        point.title = "test"
         self.annotations.append(point)
         self.mapView.addAnnotations(self.annotations)
 
@@ -54,29 +61,15 @@ class ViewController: UIViewController, MKMapViewDelegate {
         self.isLongPressInProgress = false
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        let reuseIdentifier = "pin"
-        var pin = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseIdentifier) as? MKPinAnnotationView
-        if pin == nil {
-            pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
-            pin!.pinTintColor = UIColor.redColor()
-            pin!.canShowCallout = true
-            pin!.rightCalloutAccessoryView = UIButton(type: .InfoLight)
-        } else {
-            pin!.annotation = annotation
-        }
-        return pin
-    }
-    
-    func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         performSegueWithIdentifier("showDetail", sender: self)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-//        if segue.identifier == "addLocation" {
-//            let destination = segue.destinationViewController as! SubmitInfoViewController
-//            destination.mapView = mapView
-//        }
+        if segue.identifier == "showDetail" {
+            let destination = segue.destinationViewController as! DetailsViewController
+            destination.mapView = mapView
+        }
     }
 }
 
