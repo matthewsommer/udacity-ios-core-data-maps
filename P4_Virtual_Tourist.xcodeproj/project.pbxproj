@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C95359201C618F1400A9054E /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C953591F1C618F1400A9054E /* DetailsViewController.swift */; };
 		C9A5940B1C0BD8A7006347F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A5940A1C0BD8A7006347F9 /* AppDelegate.swift */; };
 		C9A5940D1C0BD8A7006347F9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A5940C1C0BD8A7006347F9 /* ViewController.swift */; };
 		C9A594101C0BD8A7006347F9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9A5940E1C0BD8A7006347F9 /* Main.storyboard */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C953591F1C618F1400A9054E /* DetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		C9A594071C0BD8A7006347F9 /* P4_Virtual_Tourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = P4_Virtual_Tourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A5940A1C0BD8A7006347F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C9A5940C1C0BD8A7006347F9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				C9A594111C0BD8A7006347F9 /* Assets.xcassets */,
 				C9A594131C0BD8A7006347F9 /* LaunchScreen.storyboard */,
 				C9A594161C0BD8A7006347F9 /* Info.plist */,
+				C953591F1C618F1400A9054E /* DetailsViewController.swift */,
 			);
 			path = P4_Virtual_Tourist;
 			sourceTree = "<group>";
@@ -258,6 +261,7 @@
 			files = (
 				C9A5940D1C0BD8A7006347F9 /* ViewController.swift in Sources */,
 				C9A5940B1C0BD8A7006347F9 /* AppDelegate.swift in Sources */,
+				C95359201C618F1400A9054E /* DetailsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
