@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class ViewController: UIViewController, MKMapViewDelegate {
+class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
 
     @IBOutlet weak var mapView: MKMapView!
     
@@ -26,9 +26,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
         self.longPressGesture.addTarget(self, action: "handleLongPress:")
         self.view.addGestureRecognizer(self.longPressGesture)
         
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        let context = appDelegate.managedObjectContext
-        print("context has changes to save: \(context.hasChanges)")
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {}
+        
+        fetchedResultsController.delegate = self
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -36,6 +38,47 @@ class ViewController: UIViewController, MKMapViewDelegate {
         for annotation in mapView.selectedAnnotations {
             mapView.deselectAnnotation(annotation, animated: false)
         }
+        
+        for pin in self.fetchedResultsController.fetchedObjects! as! [Pin] {
+            let point = MKPointAnnotation()
+            point.coordinate.latitude = pin.latitude
+            point.coordinate.longitude = pin.longitude
+            self.annotations.append(point)
+            self.mapView.addAnnotations(self.annotations)
+        }
+    }
+    
+    // MARK: - Core Data Convenience
+    
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataStackManager.sharedInstance().managedObjectContext!
+    }
+    
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+            managedObjectContext: self.sharedContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+        
+        return fetchedResultsController
+    }()
+    
+    func addPin(point: MKPointAnnotation) {
+        
+            let dictionary: [String : AnyObject] = [
+                Pin.Keys.ID : self.mapView.annotations.count,
+                Pin.Keys.Longitude : point.coordinate.longitude,
+                Pin.Keys.Latitude : point.coordinate.latitude
+            ]
+
+            let _ = Pin(dictionary: dictionary, context: sharedContext)
+            
+            CoreDataStackManager.sharedInstance().saveContext()
     }
     
     func handleLongPress(gesture: UILongPressGestureRecognizer) {
@@ -52,9 +95,9 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         let point = MKPointAnnotation()
         point.coordinate = coordinates
-        self.annotations.append(point)
-        self.mapView.addAnnotations(self.annotations)
+        self.mapView.addAnnotation(point)
 
+        addPin(point)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -69,6 +112,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
         if segue.identifier == "showDetail" {
             let destination = segue.destinationViewController as! DetailsViewController
             destination.mapView = mapView
+            //TODO: This is always the last pin added, which is not correct.
+            //destination.pin = selectedPin
         }
     }
 }
