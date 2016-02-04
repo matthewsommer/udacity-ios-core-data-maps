@@ -42,10 +42,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         }
         
         for pin in self.fetchedResultsController.fetchedObjects! as! [Pin] {
-            let point = MKPointAnnotation()
-            point.coordinate.latitude = pin.latitude
-            point.coordinate.longitude = pin.longitude
-            self.annotations.append(point)
+            self.mapView.addAnnotation(pin)
             self.mapView.addAnnotations(self.annotations)
         }
     }
@@ -73,7 +70,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
     func addPin(point: MKPointAnnotation) -> Pin {
         
             let dictionary: [String : AnyObject] = [
-                Pin.Keys.Title : String(point.coordinate.longitude) + "," + String(point.coordinate.latitude),
+                Pin.Keys.Title : point.title!,
                 Pin.Keys.Longitude : point.coordinate.longitude,
                 Pin.Keys.Latitude : point.coordinate.latitude
             ]
@@ -99,6 +96,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         
         let point = MKPointAnnotation()
         point.coordinate = coordinates
+        point.title = String(point.coordinate.longitude) + "," + String(point.coordinate.latitude)
         self.mapView.addAnnotation(addPin(point))
     }
     
@@ -108,13 +106,11 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
-        let pin = view.annotation as! Pin
-        
         if(editButton.title == "Edit") {
-            performSegueWithIdentifier("showDetail", sender: pin)
+            performSegueWithIdentifier("showDetail", sender: self)
         }
         else if (editButton.title == "Done"){
-            mapView.removeAnnotation(pin)
+            mapView.removeAnnotation(view.annotation!)
         }
     }
     
@@ -122,7 +118,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         if segue.identifier == "showDetail" {
             let destination = segue.destinationViewController as! DetailsViewController
             destination.mapView = mapView
-            destination.pin =  sender as! Pin
+            destination.pin = mapView.selectedAnnotations.first as! Pin
         }
     }
     @IBAction func editButtonAction(sender: AnyObject) {

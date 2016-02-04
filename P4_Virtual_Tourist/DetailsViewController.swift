@@ -27,7 +27,7 @@ let LON_MAX = 180.0
 class DetailsViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
-    var pin = Pin()
+    var pin: Pin!
     var selectedIndexes = [NSIndexPath]()
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
@@ -37,31 +37,29 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, NSFetchedResul
     @IBOutlet weak var bottomButton: UIBarButtonItem!
     
     override func viewDidLoad() {
+
         super.viewDidLoad()
         self.mapView.delegate = self
-        let point = MKPointAnnotation()
-        point.coordinate.latitude = pin.latitude
-        point.coordinate.longitude = pin.longitude
-        mapView.addAnnotation(point)
-        let region = MKCoordinateRegionMakeWithDistance(point.coordinate, 40000, 40000)
+        mapView.addAnnotation(pin)
+        let region = MKCoordinateRegionMakeWithDistance(pin.coordinate, 40000, 40000)
         mapView.region = region
         
         let methodArguments = [
             "method": METHOD_NAME,
             "api_key": API_KEY,
-            "bbox": Flikr.createBoundingBoxString(point.coordinate.latitude, longitude: point.coordinate.longitude),
+            "bbox": Flikr.createBoundingBoxString(pin.coordinate.latitude, longitude: pin.coordinate.longitude),
             "safe_search": SAFE_SEARCH,
             "extras": EXTRAS,
             "format": DATA_FORMAT,
             "nojsoncallback": NO_JSON_CALLBACK
         ]
-        Flikr.getImageFromFlickrBySearch(methodArguments)
+        //Flikr.getImageFromFlickrBySearch(methodArguments)
         
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {}
-        
-        fetchedResultsController.delegate = self
+//        do {
+//            try fetchedResultsController.performFetch()
+//        } catch {}
+//        
+//        fetchedResultsController.delegate = self
     }
     
     // MARK: - Core Data Convenience
@@ -74,7 +72,7 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, NSFetchedResul
         
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "Title", ascending: true)]
         fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin);
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
