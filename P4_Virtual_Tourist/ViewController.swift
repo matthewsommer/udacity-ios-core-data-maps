@@ -14,11 +14,11 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var editButton: UIBarButtonItem!
+    @IBOutlet weak var editInfoView: UIView!
     
     let longPressGesture = UILongPressGestureRecognizer()
     var isLongPressInProgress: Bool = false
     var annotations = [MKPointAnnotation]()
-    var editMode: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +60,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
             managedObjectContext: self.sharedContext,
@@ -70,17 +70,19 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         return fetchedResultsController
     }()
     
-    func addPin(point: MKPointAnnotation) {
+    func addPin(point: MKPointAnnotation) -> Pin {
         
             let dictionary: [String : AnyObject] = [
-                Pin.Keys.ID : self.mapView.annotations.count,
+                Pin.Keys.Title : String(point.coordinate.longitude) + "," + String(point.coordinate.latitude),
                 Pin.Keys.Longitude : point.coordinate.longitude,
                 Pin.Keys.Latitude : point.coordinate.latitude
             ]
 
-            let _ = Pin(dictionary: dictionary, context: sharedContext)
+            let pin = Pin(dictionary: dictionary, context: sharedContext)
             
             CoreDataStackManager.sharedInstance().saveContext()
+        
+        return pin
     }
     
     func handleLongPress(gesture: UILongPressGestureRecognizer) {
@@ -97,9 +99,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         
         let point = MKPointAnnotation()
         point.coordinate = coordinates
-        self.mapView.addAnnotation(point)
-
-        addPin(point)
+        self.mapView.addAnnotation(addPin(point))
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -107,18 +107,33 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        performSegueWithIdentifier("showDetail", sender: self)
+        
+        let pin = view.annotation as! Pin
+        
+        if(editButton.title == "Edit") {
+            performSegueWithIdentifier("showDetail", sender: pin)
+        }
+        else if (editButton.title == "Done"){
+            mapView.removeAnnotation(pin)
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
             let destination = segue.destinationViewController as! DetailsViewController
             destination.mapView = mapView
-            //TODO: This is always the last pin added, which is not correct.
-            //destination.pin = selectedPin
+            destination.pin =  sender as! Pin
         }
     }
     @IBAction func editButtonAction(sender: AnyObject) {
+        if(editButton.title == "Edit") {
+            editInfoView.hidden = false
+            editButton.title = "Done"
+        }
+        else if (editButton.title == "Done"){
+            editInfoView.hidden = true
+            editButton.title = "Edit"
+        }
     }
 }
 

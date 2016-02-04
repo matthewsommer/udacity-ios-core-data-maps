@@ -7,20 +7,20 @@
 //
 
 import CoreData
+import MapKit
 
 @objc(Pin)
 
-class Pin: NSManagedObject {
+class Pin: NSManagedObject, MKAnnotation {
     
     struct Keys {
-        static let ID = "id"
-        static let PointAnnotation = "pointannotation"
+        static let Title = "Title"
         static let Longitude = "longitude"
         static let Latitude = "latitude"
         static let Photos = "photos"
     }
     
-    @NSManaged var id: NSNumber
+    @NSManaged var title: String?
     @NSManaged var longitude: Double
     @NSManaged var latitude: Double
     @NSManaged var photos: [Photo]
@@ -39,8 +39,18 @@ class Pin: NSManagedObject {
 
         super.init(entity: entity,insertIntoManagedObjectContext: context)
 
-        id = dictionary[Keys.ID] as! Int
+        title = dictionary[Keys.Title] as? String
         longitude = dictionary[Keys.Longitude]! as! Double
         latitude = dictionary[Keys.Latitude]! as! Double
+    }
+    
+    var locationCoordinate = CLLocationCoordinate2D()
+    
+    var coordinate: CLLocationCoordinate2D {
+        get {
+            locationCoordinate = CLLocationCoordinate2DMake(self.latitude, self.longitude)
+            
+            return locationCoordinate
+        }
     }
 }

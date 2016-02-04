@@ -66,6 +66,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="editButton" destination="5ng-of-rxg" id="yBe-7S-HnM"/>
+                        <outlet property="editInfoView" destination="64O-9c-T0G" id="Q40-8a-xXT"/>
                         <outlet property="mapView" destination="sZb-nC-UbF" id="BXO-WM-hvI"/>
                         <segue destination="Cge-VX-Xrp" kind="show" identifier="showDetail" id="c96-JU-kRN"/>
                     </connections>
