@@ -13,10 +13,12 @@ import CoreData
 class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
 
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var editButton: UIBarButtonItem!
     
     let longPressGesture = UILongPressGestureRecognizer()
     var isLongPressInProgress: Bool = false
     var annotations = [MKPointAnnotation]()
+    var editMode: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,6 +117,8 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
             //TODO: This is always the last pin added, which is not correct.
             //destination.pin = selectedPin
         }
+    }
+    @IBAction func editButtonAction(sender: AnyObject) {
     }
 }
 

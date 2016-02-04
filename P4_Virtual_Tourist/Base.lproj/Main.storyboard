@@ -21,20 +21,51 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="sZb-nC-UbF">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                             </mapView>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="64O-9c-T0G">
+                                <rect key="frame" x="0.0" y="540" width="600" height="60"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap pins to delete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M5f-HN-U3M">
+                                        <rect key="frame" x="232" y="19.5" width="136.5" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="M5f-HN-U3M" firstAttribute="centerX" secondItem="64O-9c-T0G" secondAttribute="centerX" id="3s5-t6-c2h"/>
+                                    <constraint firstItem="M5f-HN-U3M" firstAttribute="centerY" secondItem="64O-9c-T0G" secondAttribute="centerY" id="aDI-s2-vK2"/>
+                                    <constraint firstAttribute="height" constant="60" id="e6u-Bf-IgP"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="sZb-nC-UbF" secondAttribute="bottom" id="DEt-1b-BtM"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="64O-9c-T0G" secondAttribute="bottom" id="DUt-tt-0KI"/>
                             <constraint firstItem="sZb-nC-UbF" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="HFN-uF-gcl"/>
+                            <constraint firstItem="64O-9c-T0G" firstAttribute="leading" secondItem="sZb-nC-UbF" secondAttribute="trailing" constant="-420" id="XlX-2w-3VX"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="64O-9c-T0G" secondAttribute="trailing" constant="-20" id="dPg-U4-GeE"/>
                             <constraint firstItem="sZb-nC-UbF" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="h6R-Wz-AzN"/>
                             <constraint firstItem="sZb-nC-UbF" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="wzg-p4-EWw"/>
+                            <constraint firstItem="64O-9c-T0G" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="zlG-EI-sPn"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="XlX-2w-3VX"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="fUQ-Ee-5n6">
                         <barButtonItem key="backBarButtonItem" title="Back" id="64I-aw-i0p"/>
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="5ng-of-rxg"/>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="5ng-of-rxg">
+                            <connections>
+                                <action selector="editButtonAction:" destination="BYZ-38-t0r" id="LXa-tB-ciJ"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="editButton" destination="5ng-of-rxg" id="yBe-7S-HnM"/>
                         <outlet property="mapView" destination="sZb-nC-UbF" id="BXO-WM-hvI"/>
                         <segue destination="Cge-VX-Xrp" kind="show" identifier="showDetail" id="c96-JU-kRN"/>
                     </connections>
