@@ -109,7 +109,6 @@ class Flikr : NSObject {
                     if let photoArray = photosDictionary.valueForKey("photo") as? [[String: AnyObject]] {
                         let randomPhotoIndex = Int(arc4random_uniform(UInt32(photoArray.count)))
                         let photoDictionary = photoArray[randomPhotoIndex] as [String: AnyObject]
-                        let photoTitle = photoDictionary["title"] as? String
                         let imageUrlString = photoDictionary["url_m"] as? String
                         let imageURL = NSURL(string: imageUrlString!)
                         if let imageData = NSData(contentsOfURL: imageURL!) {
@@ -127,76 +126,6 @@ class Flikr : NSObject {
                 }
             }
         }
-        task.resume()
-    }
-    
-    class func getImageFromFlickrBySearch(methodArguments: [String : AnyObject]) {
-        
-        let session = NSURLSession.sharedSession()
-        let urlString = BASE_URL + Flikr.escapedParameters(methodArguments)
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
-            
-            /* GUARD: Was there an error? */
-            guard (error == nil) else {
-                print("There was an error with your request: \(error)")
-                return
-            }
-            
-            /* GUARD: Did we get a successful 2XX response? */
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                if let response = response as? NSHTTPURLResponse {
-                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
-                } else if let response = response {
-                    print("Your request returned an invalid response! Response: \(response)!")
-                } else {
-                    print("Your request returned an invalid response!")
-                }
-                return
-            }
-            
-            /* GUARD: Was there any data returned? */
-            guard let data = data else {
-                print("No data was returned by the request!")
-                return
-            }
-            
-            /* Parse the data! */
-            let parsedResult: AnyObject!
-            do {
-                parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            } catch {
-                parsedResult = nil
-                print("Could not parse the data as JSON: '\(data)'")
-                return
-            }
-            
-            /* GUARD: Did Flickr return an error? */
-            guard let stat = parsedResult["stat"] as? String where stat == "ok" else {
-                print("Flickr API returned an error. See error code and message in \(parsedResult)")
-                return
-            }
-            
-            /* GUARD: Is "photos" key in our result? */
-            guard let photosDictionary = parsedResult["photos"] as? NSDictionary else {
-                print("Cannot find keys 'photos' in \(parsedResult)")
-                return
-            }
-            
-            /* GUARD: Is "pages" key in the photosDictionary? */
-            guard let totalPages = photosDictionary["pages"] as? Int else {
-                print("Cannot find key 'pages' in \(photosDictionary)")
-                return
-            }
-            
-            /* Pick a random page! */
-            let pageLimit = min(totalPages, 40)
-            let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
-            self.getImageFromFlickrBySearchWithPage(methodArguments, pageNumber: randomPage)
-        }
-        
         task.resume()
     }
     

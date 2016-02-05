@@ -66,6 +66,7 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
             cell.imageView.image = UIImage(data: photo.imageData!)
         }
         else if photo.imageData == nil {
+            cell.imageView.image = UIImage(named: "LaunchImage")
             cell.activityIndicator.startAnimating()
             Flikr.taskRandomFlikrImage(pin.coordinate) { (imageData, error) -> Void in
                 dispatch_async(dispatch_get_main_queue()) {
