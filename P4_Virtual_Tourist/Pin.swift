@@ -23,7 +23,7 @@ class Pin: NSManagedObject, MKAnnotation {
     @NSManaged var title: String?
     @NSManaged var longitude: Double
     @NSManaged var latitude: Double
-    @NSManaged var photos: [Photo]
+    @NSManaged var photos: [Photo]?
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)

@@ -116,10 +116,8 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         }
         else if (editButton.title == "Done"){
             let temppin = view.annotation! as! Pin
-            for photo in temppin.photos {
-                photo.imageData = nil
-            }
-            sharedContext.deleteObject(view.annotation! as! Pin)
+            temppin.photos = nil
+            sharedContext.deleteObject(temppin)
             mapView.removeAnnotation(view.annotation!)
             
             CoreDataStackManager.sharedInstance().saveContext()
