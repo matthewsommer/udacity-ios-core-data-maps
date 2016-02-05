@@ -203,7 +203,8 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     
     func deleteAllPhotos() {
         for photo in fetchedResultsController.fetchedObjects as! [Photo] {
-            sharedContext.deleteObject(photo)
+            photo.imageData = nil
+            //sharedContext.deleteObject(photo)
         }
     }
     
@@ -215,7 +216,8 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         }
         
         for photo in photosToDelete {
-            sharedContext.deleteObject(photo)
+            photo.imageData = nil
+            //sharedContext.deleteObject(photo)
         }
         
         selectedIndexes = [NSIndexPath]()

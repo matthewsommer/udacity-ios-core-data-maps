@@ -80,13 +80,25 @@ class Flikr : NSObject {
     
     class func taskRandomFlikrImage(coordinate: CLLocationCoordinate2D, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) {
         
-        let key = "649cee171c219d19efff76e858db7624"
-        let gallery_id = "5704-72157622566655097"
+        let methodArguments = [
+            "method": METHOD_NAME,
+            "api_key": API_KEY,
+            "bbox": createBoundingBoxString(coordinate.latitude, longitude: coordinate.longitude),
+            "safe_search": SAFE_SEARCH,
+            "extras": EXTRAS,
+            "format": DATA_FORMAT,
+            "nojsoncallback": NO_JSON_CALLBACK
+        ]
         
         let session = NSURLSession.sharedSession()
-        let urlString = "https://api.flickr.com/services/rest?method=flickr.galleries.getPhotos&extras=url_m&format=json&nojsoncallback=1&gallery_id=\(gallery_id)&api_key=\(key)"
+        let urlString = BASE_URL + Flikr.escapedParameters(methodArguments)
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
+        
+        //let session = NSURLSession.sharedSession()
+        //let urlString = "https://api.flickr.com/services/rest?method=flickr.galleries.getPhotos&extras=url_m&format=json&nojsoncallback=1&gallery_id=\(gallery_id)&api_key=\(key)"
+        //let url = NSURL(string: urlString)!
+        //let request = NSURLRequest(URL: url)
         
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
             if let error = downloadError {
@@ -103,8 +115,6 @@ class Flikr : NSObject {
                         if let imageData = NSData(contentsOfURL: imageURL!) {
                             dispatch_async(dispatch_get_main_queue(), {
                                 completionHandler(imageData: imageData, error: nil)
-//                                self.photoImageView.image = UIImage(data: imageData)
-//                                self.photoTitle.text = photoTitle
                             })
                         } else {
                             print("Image does not exist at \(imageURL)")

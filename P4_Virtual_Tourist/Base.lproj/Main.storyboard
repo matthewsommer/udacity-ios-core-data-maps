@@ -110,7 +110,7 @@
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="tEx-i5-QG3">
-                                <rect key="frame" x="0.0" y="244" width="600" height="356"/>
+                                <rect key="frame" x="0.0" y="244" width="600" height="312"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="5iW-4b-N1F">
                                     <size key="itemSize" width="216" height="132"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -181,6 +181,7 @@
                             <constraint firstItem="tEx-i5-QG3" firstAttribute="top" secondItem="8wh-yT-yCx" secondAttribute="bottom" id="JHO-w8-TAn"/>
                             <constraint firstItem="O0h-I5-WKR" firstAttribute="bottom" secondItem="M6t-Rh-FNC" secondAttribute="top" id="O7j-4M-KOh"/>
                             <constraint firstAttribute="trailingMargin" secondItem="tEx-i5-QG3" secondAttribute="trailing" constant="-20" id="P1m-N9-D6H"/>
+                            <constraint firstItem="O0h-I5-WKR" firstAttribute="top" secondItem="tEx-i5-QG3" secondAttribute="bottom" id="c1b-ip-Oet"/>
                             <constraint firstAttribute="trailingMargin" secondItem="8wh-yT-yCx" secondAttribute="trailing" constant="-20" id="ct6-QX-AEX"/>
                             <constraint firstItem="8wh-yT-yCx" firstAttribute="top" secondItem="0gJ-rm-tU7" secondAttribute="bottom" id="qCO-q9-oBt"/>
                             <constraint firstItem="O0h-I5-WKR" firstAttribute="trailing" secondItem="tEx-i5-QG3" secondAttribute="trailing" id="rpk-uk-bnK"/>
@@ -188,6 +189,7 @@
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="4Uw-OH-jmk"/>
+                                <exclude reference="AS4-na-oux"/>
                             </mask>
                         </variation>
                     </view>
