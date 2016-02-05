@@ -125,24 +125,26 @@
                                             <rect key="frame" x="0.0" y="0.0" width="216" height="132"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="qxo-Qr-tdy">
-                                                    <rect key="frame" x="98" y="56" width="20" height="20"/>
-                                                </activityIndicatorView>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jRM-qr-gKA" userLabel="Mask View">
                                                     <rect key="frame" x="0.0" y="0.0" width="192" height="142"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 </view>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="LeA-wo-2dI">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LeA-wo-2dI">
                                                     <rect key="frame" x="8" y="8" width="200" height="116"/>
                                                 </imageView>
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="qxo-Qr-tdy">
+                                                    <rect key="frame" x="90" y="47" width="37" height="37"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <constraints>
-                                            <constraint firstItem="LeA-wo-2dI" firstAttribute="leading" secondItem="fvs-Kd-9xP" secondAttribute="leadingMargin" id="LlJ-VE-viq"/>
-                                            <constraint firstAttribute="bottomMargin" secondItem="LeA-wo-2dI" secondAttribute="bottom" id="OuJ-wY-468"/>
-                                            <constraint firstAttribute="trailingMargin" secondItem="LeA-wo-2dI" secondAttribute="trailing" id="tSW-he-StQ"/>
-                                            <constraint firstItem="LeA-wo-2dI" firstAttribute="top" secondItem="fvs-Kd-9xP" secondAttribute="topMargin" id="yxv-nu-qtD"/>
+                                            <constraint firstItem="qxo-Qr-tdy" firstAttribute="centerY" secondItem="LeA-wo-2dI" secondAttribute="centerY" id="8ZD-dw-mXl"/>
+                                            <constraint firstItem="LeA-wo-2dI" firstAttribute="height" secondItem="fvs-Kd-9xP" secondAttribute="height" id="EwF-LB-PEW"/>
+                                            <constraint firstItem="qxo-Qr-tdy" firstAttribute="centerX" secondItem="LeA-wo-2dI" secondAttribute="centerX" id="M2p-M1-I7f"/>
+                                            <constraint firstItem="LeA-wo-2dI" firstAttribute="centerX" secondItem="fvs-Kd-9xP" secondAttribute="centerX" id="jvF-FW-dZv"/>
+                                            <constraint firstItem="LeA-wo-2dI" firstAttribute="width" secondItem="fvs-Kd-9xP" secondAttribute="width" id="tvZ-zT-HdS"/>
+                                            <constraint firstItem="LeA-wo-2dI" firstAttribute="centerY" secondItem="fvs-Kd-9xP" secondAttribute="centerY" id="urr-w2-Ubd"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="activityIndicator" destination="qxo-Qr-tdy" id="pwQ-Cg-yyl"/>
@@ -200,7 +202,4 @@
             <point key="canvasLocation" x="1560" y="462"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="LaunchImage" width="1536" height="2048"/>
-    </resources>
 </document>

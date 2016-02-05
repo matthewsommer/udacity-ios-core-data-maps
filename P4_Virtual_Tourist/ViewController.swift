@@ -77,13 +77,11 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
 
             let pin = Pin(dictionary: dictionary, context: sharedContext)
         
-            let red = CGFloat(Float(arc4random() % 10000) / 10000.0)
-            let green = CGFloat(Float(arc4random() % 10000) / 10000.0)
-            let blue = CGFloat(Float(arc4random() % 10000) / 10000.0)
-            
-            let photo = Photo(insertIntoMangedObjectContext: sharedContext)
-            photo.value = UIColor(red: red, green: green, blue: blue, alpha: 1)
-            
+            for _ in 0...20 {
+                let photo = Photo(insertIntoMangedObjectContext: sharedContext)
+                photo.pin = pin
+            }
+        
             CoreDataStackManager.sharedInstance().saveContext()
         
         return pin

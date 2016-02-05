@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import MapKit
 
 let BASE_URL = "https://api.flickr.com/services/rest/"
 let METHOD_NAME = "flickr.photos.search"
@@ -75,6 +76,48 @@ class Flikr : NSObject {
         task.resume()
         
         return task
+    }
+    
+    class func taskRandomFlikrImage(coordinate: CLLocationCoordinate2D, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) {
+        
+        let key = "649cee171c219d19efff76e858db7624"
+        let gallery_id = "5704-72157622566655097"
+        
+        let session = NSURLSession.sharedSession()
+        let urlString = "https://api.flickr.com/services/rest?method=flickr.galleries.getPhotos&extras=url_m&format=json&nojsoncallback=1&gallery_id=\(gallery_id)&api_key=\(key)"
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        
+        let task = session.dataTaskWithRequest(request) {data, response, downloadError in
+            if let error = downloadError {
+                print("Could not complete the request \(error)")
+            } else {
+                let parsedResult = try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)
+                if let photosDictionary = parsedResult.valueForKey("photos") as? NSDictionary {
+                    if let photoArray = photosDictionary.valueForKey("photo") as? [[String: AnyObject]] {
+                        let randomPhotoIndex = Int(arc4random_uniform(UInt32(photoArray.count)))
+                        let photoDictionary = photoArray[randomPhotoIndex] as [String: AnyObject]
+                        let photoTitle = photoDictionary["title"] as? String
+                        let imageUrlString = photoDictionary["url_m"] as? String
+                        let imageURL = NSURL(string: imageUrlString!)
+                        if let imageData = NSData(contentsOfURL: imageURL!) {
+                            dispatch_async(dispatch_get_main_queue(), {
+                                completionHandler(imageData: imageData, error: nil)
+//                                self.photoImageView.image = UIImage(data: imageData)
+//                                self.photoTitle.text = photoTitle
+                            })
+                        } else {
+                            print("Image does not exist at \(imageURL)")
+                        }
+                    } else {
+                        print("Cant find key 'photo' in \(photosDictionary)")
+                    }
+                } else {
+                    print("Cant find key 'photos' in \(parsedResult)")
+                }
+            }
+        }
+        task.resume()
     }
     
     class func getImageFromFlickrBySearch(methodArguments: [String : AnyObject]) {

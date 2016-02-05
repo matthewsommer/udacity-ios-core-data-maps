@@ -16,10 +16,14 @@ class Photo : NSManagedObject {
     struct Keys {
         static let ImagePath = "imagePath"
         static let value = "value"
+        static let ImageData = "imageData"
+        static let Pin = "pin"
     }
     
     @NSManaged var imagePath: String?
     @NSManaged var value: UIColor
+    @NSManaged var imageData: NSData?
+    @NSManaged var pin: Pin
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)

@@ -48,10 +48,10 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         
         let layout : UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 2
+        layout.minimumInteritemSpacing = 2
         
-        let width = floor(self.collectionView.frame.size.width/3)
+        let width = floor(self.collectionView.frame.size.width/3 - 4)
         layout.itemSize = CGSize(width: width, height: width)
         collectionView.collectionViewLayout = layout
     }
@@ -62,10 +62,22 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         
         let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         
-        //cell.color = photo.value
+        if photo.imageData != nil {
+            cell.imageView.image = UIImage(data: photo.imageData!)
+        }
+        else if photo.imageData == nil {
+            cell.activityIndicator.startAnimating()
+            Flikr.taskRandomFlikrImage(pin.coordinate) { (imageData, error) -> Void in
+                dispatch_async(dispatch_get_main_queue()) {
+                    photo.imageData = imageData!
+                    cell.imageView.image = UIImage(data: photo.imageData!)
+                    cell.activityIndicator.stopAnimating()
+                }
+            }
+        }
         
         if let index = selectedIndexes.indexOf(indexPath) {
-            cell.viewSelectedMask.alpha = 0.5
+            cell.viewSelectedMask.alpha = 0.3
         } else {
             cell.viewSelectedMask.alpha = 1.0
         }
@@ -81,6 +93,7 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         
         let fetchRequest = NSFetchRequest(entityName: "Photo")
         fetchRequest.sortDescriptors = []
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin);
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self
