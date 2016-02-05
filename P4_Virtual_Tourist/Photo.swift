@@ -15,13 +15,11 @@ class Photo : NSManagedObject {
     
     struct Keys {
         static let ImagePath = "imagePath"
-        static let value = "value"
         static let ImageData = "imageData"
         static let Pin = "pin"
     }
     
     @NSManaged var imagePath: String?
-    @NSManaged var value: UIColor
     @NSManaged var imageData: NSData?
     @NSManaged var pin: Pin
     
@@ -32,7 +30,5 @@ class Photo : NSManagedObject {
     convenience init(insertIntoMangedObjectContext context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         self.init(entity: entity, insertIntoManagedObjectContext: context)
-        
-        value = UIColor.whiteColor()
     }
 }

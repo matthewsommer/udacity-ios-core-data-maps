@@ -78,7 +78,7 @@ class Flikr : NSObject {
         return task
     }
     
-    class func taskRandomFlikrImage(coordinate: CLLocationCoordinate2D, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) {
+    class func taskRandomFlikrImage(coordinate: CLLocationCoordinate2D, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionDataTask {
         
         let methodArguments = [
             "method": METHOD_NAME,
@@ -122,6 +122,8 @@ class Flikr : NSObject {
             }
         }
         task.resume()
+        
+        return task
     }
     
     // MARK: - Helpers

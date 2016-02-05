@@ -12,4 +12,16 @@ class CollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var viewSelectedMask: UIView!
+    
+    var downloading : Bool = false
+    var downloaded : Bool = false
+    
+    var taskToCancelifCellIsReused: NSURLSessionTask? {
+        
+        didSet {
+            if let taskToCancel = oldValue {
+                taskToCancel.cancel()
+            }
+        }
+    }
 }

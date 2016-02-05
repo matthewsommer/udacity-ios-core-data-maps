@@ -47,41 +47,13 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         super.viewDidLayoutSubviews()
         
         let layout : UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
         layout.minimumLineSpacing = 2
         layout.minimumInteritemSpacing = 2
         
         let width = floor(self.collectionView.frame.size.width/3 - 4)
         layout.itemSize = CGSize(width: width, height: width)
         collectionView.collectionViewLayout = layout
-    }
-    
-    // MARK: - Configure Cell
-    
-    func configureCell(cell: CollectionViewCell, atIndexPath indexPath: NSIndexPath) {
-        
-        let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
-        
-        if photo.imageData != nil {
-            cell.imageView.image = UIImage(data: photo.imageData!)
-        }
-        else if photo.imageData == nil {
-            cell.imageView.image = UIImage(named: "LaunchImage")
-            cell.activityIndicator.startAnimating()
-            Flikr.taskRandomFlikrImage(pin.coordinate) { (imageData, error) -> Void in
-                dispatch_async(dispatch_get_main_queue()) {
-                    photo.imageData = imageData!
-                    cell.imageView.image = UIImage(data: photo.imageData!)
-                    cell.activityIndicator.stopAnimating()
-                }
-            }
-        }
-        
-        if let index = selectedIndexes.indexOf(indexPath) {
-            cell.viewSelectedMask.alpha = 0.3
-        } else {
-            cell.viewSelectedMask.alpha = 1.0
-        }
     }
     
     // MARK: - Core Data Convenience
@@ -119,7 +91,34 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("photoCell", forIndexPath: indexPath) as! CollectionViewCell
         
-        self.configureCell(cell, atIndexPath: indexPath)
+        let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
+        
+        if photo.imageData != nil && !cell.downloading {
+            cell.imageView.image = UIImage(data: photo.imageData!)
+        }
+        else if photo.imageData == nil && cell.imageView.image == nil && !cell.downloading {
+            cell.activityIndicator.startAnimating()
+            cell.downloading = true
+            let task = Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, error) -> Void in
+                if let data = imageData {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        cell.downloading = false
+                        photo.imageData = data
+                        cell.imageView.image = UIImage(data: photo.imageData!)
+                        CoreDataStackManager.sharedInstance().saveContext()
+                        cell.activityIndicator.stopAnimating()
+                    }
+                }
+            })
+            
+            cell.taskToCancelifCellIsReused = task
+        }
+        
+        if let _ = selectedIndexes.indexOf(indexPath) {
+            cell.viewSelectedMask.alpha = 0.3
+        } else {
+            cell.viewSelectedMask.alpha = 1.0
+        }
         
         return cell
     }
@@ -134,7 +133,11 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
             selectedIndexes.append(indexPath)
         }
         
-        configureCell(cell, atIndexPath: indexPath)
+        if let _ = selectedIndexes.indexOf(indexPath) {
+            cell.viewSelectedMask.alpha = 0.3
+        } else {
+            cell.viewSelectedMask.alpha = 1.0
+        }
         
         updateBottomButton()
     }
@@ -205,7 +208,6 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     func deleteAllPhotos() {
         for photo in fetchedResultsController.fetchedObjects as! [Photo] {
             photo.imageData = nil
-            //sharedContext.deleteObject(photo)
         }
     }
     
@@ -218,7 +220,6 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         
         for photo in photosToDelete {
             photo.imageData = nil
-            //sharedContext.deleteObject(photo)
         }
         
         selectedIndexes = [NSIndexPath]()
