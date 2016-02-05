@@ -7,9 +7,28 @@
 //
 
 import CoreData
+import UIKit
+
+@objc(Photo)
 
 class Photo : NSManagedObject {
+    
+    struct Keys {
+        static let ImagePath = "imagePath"
+        static let value = "value"
+    }
+    
+    @NSManaged var imagePath: String?
+    @NSManaged var value: UIColor
+    
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
+    
+    convenience init(insertIntoMangedObjectContext context: NSManagedObjectContext) {
+        let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
+        self.init(entity: entity, insertIntoManagedObjectContext: context)
+        
+        value = UIColor.whiteColor()
     }
 }

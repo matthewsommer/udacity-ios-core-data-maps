@@ -125,12 +125,16 @@
                                             <rect key="frame" x="0.0" y="0.0" width="216" height="132"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LeA-wo-2dI">
-                                                    <rect key="frame" x="8" y="8" width="200" height="116"/>
-                                                </imageView>
                                                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="qxo-Qr-tdy">
                                                     <rect key="frame" x="98" y="56" width="20" height="20"/>
                                                 </activityIndicatorView>
+                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jRM-qr-gKA" userLabel="Mask View">
+                                                    <rect key="frame" x="0.0" y="0.0" width="192" height="142"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </view>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="LeA-wo-2dI">
+                                                    <rect key="frame" x="8" y="8" width="200" height="116"/>
+                                                </imageView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -140,6 +144,12 @@
                                             <constraint firstAttribute="trailingMargin" secondItem="LeA-wo-2dI" secondAttribute="trailing" id="tSW-he-StQ"/>
                                             <constraint firstItem="LeA-wo-2dI" firstAttribute="top" secondItem="fvs-Kd-9xP" secondAttribute="topMargin" id="yxv-nu-qtD"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="activityIndicator" destination="qxo-Qr-tdy" id="pwQ-Cg-yyl"/>
+                                            <outlet property="imageView" destination="LeA-wo-2dI" id="5T2-Jx-9qI"/>
+                                            <outlet property="maskView" destination="jRM-qr-gKA" id="Vrq-78-QfK"/>
+                                            <outlet property="viewSelectedMask" destination="jRM-qr-gKA" id="d6i-VX-RHc"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
@@ -190,4 +200,7 @@
             <point key="canvasLocation" x="1560" y="462"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="LaunchImage" width="1536" height="2048"/>
+    </resources>
 </document>

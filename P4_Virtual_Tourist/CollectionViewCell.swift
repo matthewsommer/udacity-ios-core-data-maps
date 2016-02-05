@@ -12,4 +12,15 @@ class CollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var viewSelectedMask: UIView!
+    
+    var color: UIColor {
+        set {
+            self.viewSelectedMask.backgroundColor = newValue
+        }
+        
+        get {
+            return self.viewSelectedMask.backgroundColor ?? UIColor.whiteColor()
+        }
+    }
 }

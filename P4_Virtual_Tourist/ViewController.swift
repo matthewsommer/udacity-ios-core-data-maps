@@ -76,6 +76,13 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
             ]
 
             let pin = Pin(dictionary: dictionary, context: sharedContext)
+        
+            let red = CGFloat(Float(arc4random() % 10000) / 10000.0)
+            let green = CGFloat(Float(arc4random() % 10000) / 10000.0)
+            let blue = CGFloat(Float(arc4random() % 10000) / 10000.0)
+            
+            let photo = Photo(insertIntoMangedObjectContext: sharedContext)
+            photo.value = UIColor(red: red, green: green, blue: blue, alpha: 1)
             
             CoreDataStackManager.sharedInstance().saveContext()
         
@@ -110,7 +117,9 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
             performSegueWithIdentifier("showDetail", sender: self)
         }
         else if (editButton.title == "Done"){
+            sharedContext.deleteObject(view.annotation! as! Pin)
             mapView.removeAnnotation(view.annotation!)
+            CoreDataStackManager.sharedInstance().saveContext()
         }
     }
     

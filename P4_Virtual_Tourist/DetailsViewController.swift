@@ -10,21 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-let BASE_URL = "https://api.flickr.com/services/rest/"
-let METHOD_NAME = "flickr.photos.search"
-let API_KEY = "649cee171c219d19efff76e858db7624"
-let EXTRAS = "url_m"
-let SAFE_SEARCH = "1"
-let DATA_FORMAT = "json"
-let NO_JSON_CALLBACK = "1"
-let BOUNDING_BOX_HALF_WIDTH = 1.0
-let BOUNDING_BOX_HALF_HEIGHT = 1.0
-let LAT_MIN = -90.0
-let LAT_MAX = 90.0
-let LON_MIN = -180.0
-let LON_MAX = 180.0
-
-class DetailsViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
+class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
     var pin: Pin!
@@ -40,26 +26,49 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, NSFetchedResul
 
         super.viewDidLoad()
         self.mapView.delegate = self
+
+        collectionView.dataSource = self;
+        collectionView.delegate = self;
+
         mapView.addAnnotation(pin)
         let region = MKCoordinateRegionMakeWithDistance(pin.coordinate, 40000, 40000)
         mapView.region = region
         
-        let methodArguments = [
-            "method": METHOD_NAME,
-            "api_key": API_KEY,
-            "bbox": Flikr.createBoundingBoxString(pin.coordinate.latitude, longitude: pin.coordinate.longitude),
-            "safe_search": SAFE_SEARCH,
-            "extras": EXTRAS,
-            "format": DATA_FORMAT,
-            "nojsoncallback": NO_JSON_CALLBACK
-        ]
-        //Flikr.getImageFromFlickrBySearch(methodArguments)
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {}
         
-//        do {
-//            try fetchedResultsController.performFetch()
-//        } catch {}
-//        
-//        fetchedResultsController.delegate = self
+        fetchedResultsController.delegate = self
+        
+        updateBottomButton()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let layout : UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        
+        let width = floor(self.collectionView.frame.size.width/3)
+        layout.itemSize = CGSize(width: width, height: width)
+        collectionView.collectionViewLayout = layout
+    }
+    
+    // MARK: - Configure Cell
+    
+    func configureCell(cell: CollectionViewCell, atIndexPath indexPath: NSIndexPath) {
+        
+        let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
+        
+        //cell.color = photo.value
+        
+        if let index = selectedIndexes.indexOf(indexPath) {
+            cell.viewSelectedMask.alpha = 0.5
+        } else {
+            cell.viewSelectedMask.alpha = 1.0
+        }
     }
     
     // MARK: - Core Data Convenience
@@ -70,52 +79,140 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, NSFetchedResul
     
     lazy var fetchedResultsController: NSFetchedResultsController = {
         
-        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        fetchRequest.sortDescriptors = []
         
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "Title", ascending: true)]
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin);
-        
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
-            managedObjectContext: self.sharedContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil)
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
         
         return fetchedResultsController
     }()
     
-    @IBAction func buttonButtonClicked() {
+    // MARK: - UICollectionView
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return self.fetchedResultsController.sections?.count ?? 0
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let sectionInfo = self.fetchedResultsController.sections![section]
         
+        print("number Of Cells: \(sectionInfo.numberOfObjects)")
+        return sectionInfo.numberOfObjects
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("photoCell", forIndexPath: indexPath) as! CollectionViewCell
+        
+        self.configureCell(cell, atIndexPath: indexPath)
+        
+        return cell
+    }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell
+        
+        if let index = selectedIndexes.indexOf(indexPath) {
+            selectedIndexes.removeAtIndex(index)
+        } else {
+            selectedIndexes.append(indexPath)
+        }
+        
+        configureCell(cell, atIndexPath: indexPath)
+        
+        updateBottomButton()
+    }
+    
+    // MARK: - Fetched Results Controller Delegate
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        insertedIndexPaths = [NSIndexPath]()
+        deletedIndexPaths = [NSIndexPath]()
+        updatedIndexPaths = [NSIndexPath]()
+        
+        print("in controllerWillChangeContent")
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+
+        switch type{
+            
+        case .Insert:
+            print("Insert an item")
+            insertedIndexPaths.append(newIndexPath!)
+            break
+        case .Delete:
+            print("Delete an item")
+            deletedIndexPaths.append(indexPath!)
+            break
+        case .Update:
+            print("Update an item.")
+            updatedIndexPaths.append(indexPath!)
+            break
+        case .Move:
+            print("Move an item. We don't expect to see this in this app.")
+            break
+        default:
+            break
+        }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        
+        print("in controllerDidChangeContent. changes.count: \(insertedIndexPaths.count + deletedIndexPaths.count)")
+        
+        collectionView.performBatchUpdates({() -> Void in
+            
+            for indexPath in self.insertedIndexPaths {
+                self.collectionView.insertItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.deletedIndexPaths {
+                self.collectionView.deleteItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.updatedIndexPaths {
+                self.collectionView.reloadItemsAtIndexPaths([indexPath])
+            }
+            
+            }, completion: nil)
+    }
+    
+    @IBAction func buttonButtonClicked() {
         if selectedIndexes.isEmpty {
             deleteAllPhotos()
         } else {
-            deleteSelectedColors()
+            deleteSelectedPhotos()
         }
     }
     
     func deleteAllPhotos() {
-        
         for photo in fetchedResultsController.fetchedObjects as! [Photo] {
             sharedContext.deleteObject(photo)
         }
     }
     
-    func deleteSelectedColors() {
+    func deleteSelectedPhotos() {
         var photosToDelete = [Photo]()
         
         for indexPath in selectedIndexes {
             photosToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
         }
         
-        for color in photosToDelete {
-            sharedContext.deleteObject(color)
+        for photo in photosToDelete {
+            sharedContext.deleteObject(photo)
         }
         
         selectedIndexes = [NSIndexPath]()
+        
+        updateBottomButton()
     }
     
     func updateBottomButton() {
         if selectedIndexes.count > 0 {
-            bottomButton.title = "Remove Selected Colors"
+            bottomButton.title = "Remove Selected Photos"
         } else {
             bottomButton.title = "Clear All"
         }
