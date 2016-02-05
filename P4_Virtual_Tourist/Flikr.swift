@@ -95,11 +95,6 @@ class Flikr : NSObject {
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
         
-        //let session = NSURLSession.sharedSession()
-        //let urlString = "https://api.flickr.com/services/rest?method=flickr.galleries.getPhotos&extras=url_m&format=json&nojsoncallback=1&gallery_id=\(gallery_id)&api_key=\(key)"
-        //let url = NSURL(string: urlString)!
-        //let request = NSURLRequest(URL: url)
-        
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
             if let error = downloadError {
                 print("Could not complete the request \(error)")
@@ -126,103 +121,6 @@ class Flikr : NSObject {
                 }
             }
         }
-        task.resume()
-    }
-    
-    class func getImageFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], pageNumber: Int) {
-        
-        /* Add the page to the method's arguments */
-        var withPageDictionary = methodArguments
-        withPageDictionary["page"] = pageNumber
-        
-        let session = NSURLSession.sharedSession()
-        let urlString = BASE_URL + Flikr.escapedParameters(withPageDictionary)
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
-            
-            /* GUARD: Was there an error? */
-            guard (error == nil) else {
-                print("There was an error with your request: \(error)")
-                return
-            }
-            
-            /* GUARD: Did we get a successful 2XX response? */
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                if let response = response as? NSHTTPURLResponse {
-                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
-                } else if let response = response {
-                    print("Your request returned an invalid response! Response: \(response)!")
-                } else {
-                    print("Your request returned an invalid response!")
-                }
-                return
-            }
-            
-            /* GUARD: Was there any data returned? */
-            guard let data = data else {
-                print("No data was returned by the request!")
-                return
-            }
-            
-            /* Parse the data! */
-            let parsedResult: AnyObject!
-            do {
-                parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            } catch {
-                parsedResult = nil
-                print("Could not parse the data as JSON: '\(data)'")
-                return
-            }
-            
-            /* GUARD: Did Flickr return an error (stat != ok)? */
-            guard let stat = parsedResult["stat"] as? String where stat == "ok" else {
-                print("Flickr API returned an error. See error code and message in \(parsedResult)")
-                return
-            }
-            
-            /* GUARD: Is the "photos" key in our result? */
-            guard let photosDictionary = parsedResult["photos"] as? NSDictionary else {
-                print("Cannot find key 'photos' in \(parsedResult)")
-                return
-            }
-            
-            /* GUARD: Is the "total" key in photosDictionary? */
-            guard let totalPhotosVal = (photosDictionary["total"] as? NSString)?.integerValue else {
-                print("Cannot find key 'total' in \(photosDictionary)")
-                return
-            }
-            
-            if totalPhotosVal > 0 {
-                
-                /* GUARD: Is the "photo" key in photosDictionary? */
-                guard let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] else {
-                    print("Cannot find key 'photo' in \(photosDictionary)")
-                    return
-                }
-                
-                let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
-                let photoDictionary = photosArray[randomPhotoIndex] as [String: AnyObject]
-                let photoTitle = photoDictionary["title"] as? String /* non-fatal */
-                
-                /* GUARD: Does our photo have a key for 'url_m'? */
-                guard let imageUrlString = photoDictionary["url_m"] as? String else {
-                    print("Cannot find key 'url_m' in \(photoDictionary)")
-                    return
-                }
-                
-                let imageURL = NSURL(string: imageUrlString)
-                if let imageData = NSData(contentsOfURL: imageURL!) {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        //return UIImage(data: imageData)
-                    })
-                } else {
-                    print("Image does not exist at \(imageURL)")
-                }
-            }
-        }
-        
         task.resume()
     }
     
@@ -333,29 +231,5 @@ class Flikr : NSObject {
         }
         
         return Singleton.dateFormatter
-    }
-    
-    // MARK: - Shared Image Cache
-    
-    struct Caches {
-        static let imageCache = ImageCache()
-    }
-    
-    // MARK: - Help with updating the Config
-    func updateConfig(completionHandler: (didSucceed: Bool, error: NSError?) -> Void) {
-        
-        let parameters = [String: AnyObject]()
-        
-        taskForResource(Resources.Config, parameters: parameters) { JSONResult, error in
-            
-            if let error = error {
-                completionHandler(didSucceed: false, error: error)
-            } else if let newConfig = Config(dictionary: JSONResult as! [String : AnyObject]) {
-                self.config = newConfig
-                completionHandler(didSucceed: true, error: nil)
-            } else {
-                completionHandler(didSucceed: false, error: NSError(domain: "Config", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not parse config"]))
-            }
-        }
     }
 }
