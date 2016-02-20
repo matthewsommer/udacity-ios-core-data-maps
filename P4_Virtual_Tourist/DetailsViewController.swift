@@ -93,19 +93,40 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         
         let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         
-        if photo.imageData != nil && !cell.downloading {
-            cell.imageView.image = UIImage(data: photo.imageData!)
+        var photoImage = UIImage(named: "photoPlaceHolder")
+        
+        if photo.imagePath == nil || photo.imagePath == "" {
+            photoImage = UIImage(named: "noImage")
+        } else if photo.image != nil {
+            photoImage = photo.image
         }
-        else if photo.imageData == nil && cell.imageView.image == nil && !cell.downloading {
+        
+        if photo.imagePath != nil && !cell.downloading {
+            //cell.imageView.image = UIImage(data: photo.imageData!)
+        }
+        else if photo.imagePath == nil && cell.imageView.image == nil && !cell.downloading {
             cell.activityIndicator.startAnimating()
             cell.downloading = true
-            let task = Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, error) -> Void in
+            let task = Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, imageID, error) -> Void in
+                
+                if let error = error {
+                    print("Image download error: \(error.localizedDescription)")
+                }
+                
+                let filename = imageID + ".jpg"
+                let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+                let pathArray = [dirPath, filename]
+                let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
+                
                 if let data = imageData {
+                    let image = UIImage(data: data)
+                    
+                    photo.imagePath = fileURL.path
+                    photo.image = image
+                    
                     dispatch_async(dispatch_get_main_queue()) {
                         cell.downloading = false
-                        photo.imageData = data
-                        cell.imageView.image = UIImage(data: photo.imageData!)
-                        CoreDataStackManager.sharedInstance().saveContext()
+                        cell.imageView!.image = image
                         cell.activityIndicator.stopAnimating()
                     }
                 }
@@ -207,7 +228,7 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     
     func deleteAllPhotos() {
         for photo in fetchedResultsController.fetchedObjects as! [Photo] {
-            photo.imageData = nil
+            //photo.imagePath = nil
         }
     }
     
@@ -219,7 +240,7 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         }
         
         for photo in photosToDelete {
-            photo.imageData = nil
+            //photo.imagePath = nil
         }
         
         selectedIndexes = [NSIndexPath]()

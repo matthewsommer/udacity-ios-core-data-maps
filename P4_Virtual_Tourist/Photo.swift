@@ -14,11 +14,13 @@ import UIKit
 class Photo : NSManagedObject {
     
     struct Keys {
+        static let ID = "id"
         static let ImagePath = "imagePath"
         static let ImageData = "imageData"
         static let Pin = "pin"
     }
     
+    @NSManaged var id: NSNumber
     @NSManaged var imagePath: String?
     @NSManaged var imageData: NSData?
     @NSManaged var pin: Pin
@@ -30,5 +32,26 @@ class Photo : NSManagedObject {
     convenience init(insertIntoMangedObjectContext context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         self.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
+    
+    init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
+        
+        // Core Data
+        let entity =  NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        
+        // Dictionary
+        imagePath = dictionary[Keys.ImagePath] as? String
+
+    }
+    
+    var image: UIImage? {
+        get {
+            return Flikr.Caches.imageCache.imageWithIdentifier(imagePath)
+        }
+        
+        set {
+            Flikr.Caches.imageCache.storeImage(image, withIdentifier: imagePath!)
+        }
     }
 }

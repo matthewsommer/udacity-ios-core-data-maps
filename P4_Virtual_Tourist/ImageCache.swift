@@ -1,11 +1,3 @@
-//
-//  ImageCache.swift
-//  P4_Virtual_Tourist
-//
-//  Created by Matt Sommer on 2/3/16.
-//  Copyright © 2016 Matt Sommer. All rights reserved.
-//
-
 import UIKit
 
 class ImageCache {

@@ -78,7 +78,7 @@ class Flikr : NSObject {
         return task
     }
     
-    class func taskRandomFlikrImage(coordinate: CLLocationCoordinate2D, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionDataTask {
+    class func taskRandomFlikrImage(coordinate: CLLocationCoordinate2D, completionHandler: (imageData: NSData?, imageID: String, error: NSError?) ->  Void) -> NSURLSessionDataTask {
         
         let methodArguments = [
             "method": METHOD_NAME,
@@ -105,10 +105,11 @@ class Flikr : NSObject {
                         let randomPhotoIndex = Int(arc4random_uniform(UInt32(photoArray.count)))
                         let photoDictionary = photoArray[randomPhotoIndex] as [String: AnyObject]
                         let imageUrlString = photoDictionary["url_m"] as? String
+                        let imageID = photoDictionary["id"] as? String
                         let imageURL = NSURL(string: imageUrlString!)
                         if let imageData = NSData(contentsOfURL: imageURL!) {
                             dispatch_async(dispatch_get_main_queue(), {
-                                completionHandler(imageData: imageData, error: nil)
+                                completionHandler(imageData: imageData, imageID: imageID!, error: nil)
                             })
                         } else {
                             print("Image does not exist at \(imageURL)")
@@ -233,5 +234,11 @@ class Flikr : NSObject {
         }
         
         return Singleton.dateFormatter
+    }
+    
+    // MARK: - Shared Image Cache
+    
+    struct Caches {
+        static let imageCache = ImageCache()
     }
 }
