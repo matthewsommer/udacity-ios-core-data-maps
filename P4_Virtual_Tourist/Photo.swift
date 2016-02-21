@@ -42,14 +42,28 @@ class Photo : NSManagedObject {
         imagePath = dictionary[Keys.ImagePath] as? String
 
     }
-    
     var image: UIImage? {
-        get {
-            return Flikr.Caches.imageCache.imageWithIdentifier(imagePath)
+        if imagePath != nil {
+            let fileURL = getFileURL()
+            return UIImage(contentsOfFile: fileURL.path!)
         }
-        
-        set {
-            Flikr.Caches.imageCache.storeImage(image, withIdentifier: imagePath!)
-        }
+        return nil
     }
+    
+    func getFileURL() -> NSURL {
+        let fileName = (imagePath! as NSString).lastPathComponent
+        let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+        let pathArray:[String] = [dirPath, fileName]
+        let fileURL = NSURL.fileURLWithPathComponents(pathArray)
+        return fileURL!
+    }
+//    var image: UIImage? {
+//        get {
+//            return Flikr.Caches.imageCache.imageWithIdentifier(imagePath)
+//        }
+//        
+//        set {
+//            Flikr.Caches.imageCache.storeImage(image, withIdentifier: imagePath!)
+//        }
+//    }
 }

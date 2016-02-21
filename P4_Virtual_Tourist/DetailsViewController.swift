@@ -94,36 +94,36 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     
     func configureCell(cell: CollectionViewCell, atIndexPath indexPath: NSIndexPath) {
         let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
-        print(photo.imagePath)
-        if photo.imagePath == nil {
-            cell.imageView.image = UIImage(named: "LaunchImage")
+        cell.imageView.image = UIImage(named: "LaunchImage")
+        if photo.imagePath != nil {
+            cell.imageView.image = photo.image
+            cell.activityIndicator.stopAnimating()
+        }
+        else if photo.imagePath == nil {
             cell.activityIndicator.startAnimating()
             let task = Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, imageID, error) -> Void in
                 if let error = error {
                     print("Image download error: \(error.localizedDescription)")
                 }
                 
-                let filename = imageID + ".jpg"
-                let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-                let pathArray = [dirPath, filename]
-                let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
-                
                 if let data = imageData {
                     dispatch_async(dispatch_get_main_queue()) {
-                        let image = UIImage(data: data)
+                        let filename = imageID + ".jpg"
+                        let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+                        let pathArray = [dirPath, filename]
+                        let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
                         photo.imagePath = fileURL.path
-                        photo.image = image
-                        cell.imageView!.image = image
-                        cell.activityIndicator.stopAnimating()
-                        CoreDataStackManager.sharedInstance().saveContext()
+                        
+                        let image = UIImage(data: data)
+                        UIImageJPEGRepresentation(image!, 100)!.writeToFile(fileURL.path!, atomically: true)
+                        cell.imageView.image = photo.image
                     }
                 }
+                CoreDataStackManager.sharedInstance().saveContext()
+                cell.activityIndicator.stopAnimating()
             })
             
             cell.taskToCancelifCellIsReused = task
-        }
-        else if photo.image != nil {
-            cell.imageView.image = photo.image
         }
         
         if let _ = selectedIndexes.indexOf(indexPath) {
@@ -158,52 +158,32 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         insertedIndexPaths = [NSIndexPath]()
         deletedIndexPaths = [NSIndexPath]()
         updatedIndexPaths = [NSIndexPath]()
-        
-        print("in controllerWillChangeContent")
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-
-        switch type{
-            
+        switch type {
         case .Insert:
-            print("Insert an item")
             insertedIndexPaths.append(newIndexPath!)
-            break
-        case .Delete:
-            print("Delete an item")
-            deletedIndexPaths.append(indexPath!)
-            break
         case .Update:
-            print("Update an item.")
             updatedIndexPaths.append(indexPath!)
-            break
-        case .Move:
-            print("Move an item. We don't expect to see this in this app.")
-            break
+        case .Delete:
+            deletedIndexPaths.append(indexPath!)
         default:
             break
         }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        
-        print("in controllerDidChangeContent. changes.count: \(insertedIndexPaths.count + deletedIndexPaths.count)")
-        
-        collectionView.performBatchUpdates({() -> Void in
-            
+        collectionView.performBatchUpdates({
             for indexPath in self.insertedIndexPaths {
                 self.collectionView.insertItemsAtIndexPaths([indexPath])
             }
-            
             for indexPath in self.deletedIndexPaths {
                 self.collectionView.deleteItemsAtIndexPaths([indexPath])
             }
-            
             for indexPath in self.updatedIndexPaths {
                 self.collectionView.reloadItemsAtIndexPaths([indexPath])
             }
-            
             }, completion: nil)
     }
     
@@ -233,19 +213,31 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
                 let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
                 
                 if let data = imageData {
+                    let image = UIImage(data: data)
+                    UIImageJPEGRepresentation(image!, 100)!.writeToFile(fileURL.path!, atomically: true)
+                    
                     dispatch_async(dispatch_get_main_queue()) {
-                        let image = UIImage(data: data)
                         photo.imagePath = fileURL.path
-                        photo.image = image
-                        CoreDataStackManager.sharedInstance().saveContext()
                     }
+                    
+                    CoreDataStackManager.sharedInstance().saveContext()
                 }
         })
         }
     }
     
     func deleteAllPhotos() {
+        let fileManager = NSFileManager.defaultManager()
+        
         for photo: Photo in fetchedResultsController.fetchedObjects as! [Photo] {
+            
+            do {
+                try fileManager.removeItemAtPath(photo.imagePath!)
+            }
+            catch let error as NSError {
+                print("\(error)")
+            }
+            
             sharedContext.deleteObject(photo)
             CoreDataStackManager.sharedInstance().saveContext()
         }
@@ -253,6 +245,7 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     }
     
     func deleteSelectedPhotos() {
+        let fileManager = NSFileManager.defaultManager()
         var photosToDelete = [Photo]()
         
         for indexPath in selectedIndexes {
@@ -260,6 +253,12 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         }
         
         for photo: Photo in photosToDelete {
+            do {
+                try fileManager.removeItemAtPath(photo.imagePath!)
+            }
+            catch let error as NSError {
+                print("\(error)")
+            }
             sharedContext.deleteObject(photo)
         }
         

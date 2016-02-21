@@ -80,6 +80,25 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
             for _ in 0...20 {
                 let photo = Photo(insertIntoMangedObjectContext: sharedContext)
                 photo.pin = pin
+                
+                Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, imageID, error) -> Void in
+                    if let error = error {
+                        print("Image download error: \(error.localizedDescription)")
+                    }
+                    
+                    let filename = imageID + ".jpg"
+                    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+                    let pathArray = [dirPath, filename]
+                    let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
+                    
+                    if let data = imageData {
+                        dispatch_async(dispatch_get_main_queue()) {
+                            let image = UIImage(data: data)
+                            UIImageJPEGRepresentation(image!, 100)!.writeToFile(fileURL.path!, atomically: true)
+                            photo.imagePath = fileURL.path
+                        }
+                    }
+                })
             }
         
             CoreDataStackManager.sharedInstance().saveContext()
