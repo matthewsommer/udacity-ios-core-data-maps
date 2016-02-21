@@ -82,33 +82,23 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
-        
         print("number Of Cells: \(sectionInfo.numberOfObjects)")
         return sectionInfo.numberOfObjects
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("photoCell", forIndexPath: indexPath) as! CollectionViewCell
-        
+        configureCell(cell, atIndexPath: indexPath)
+        return cell
+    }
+    
+    func configureCell(cell: CollectionViewCell, atIndexPath indexPath: NSIndexPath) {
         let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
-        
-        var photoImage = UIImage(named: "photoPlaceHolder")
-        
-        if photo.imagePath == nil || photo.imagePath == "" {
-            photoImage = UIImage(named: "noImage")
-        } else if photo.image != nil {
-            photoImage = photo.image
-        }
-        
-        if photo.imagePath != nil && !cell.downloading {
-            //cell.imageView.image = UIImage(data: photo.imageData!)
-        }
-        else if photo.imagePath == nil && cell.imageView.image == nil && !cell.downloading {
+        print(photo.imagePath)
+        if photo.imagePath == nil {
+            cell.imageView.image = UIImage(named: "LaunchImage")
             cell.activityIndicator.startAnimating()
-            cell.downloading = true
             let task = Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, imageID, error) -> Void in
-                
                 if let error = error {
                     print("Image download error: \(error.localizedDescription)")
                 }
@@ -119,20 +109,21 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
                 let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
                 
                 if let data = imageData {
-                    let image = UIImage(data: data)
-                    
-                    photo.imagePath = fileURL.path
-                    photo.image = image
-                    
                     dispatch_async(dispatch_get_main_queue()) {
-                        cell.downloading = false
+                        let image = UIImage(data: data)
+                        photo.imagePath = fileURL.path
+                        photo.image = image
                         cell.imageView!.image = image
                         cell.activityIndicator.stopAnimating()
+                        CoreDataStackManager.sharedInstance().saveContext()
                     }
                 }
             })
             
             cell.taskToCancelifCellIsReused = task
+        }
+        else if photo.image != nil {
+            cell.imageView.image = photo.image
         }
         
         if let _ = selectedIndexes.indexOf(indexPath) {
@@ -140,8 +131,6 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         } else {
             cell.viewSelectedMask.alpha = 1.0
         }
-        
-        return cell
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
@@ -221,15 +210,46 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     @IBAction func buttonButtonClicked() {
         if selectedIndexes.isEmpty {
             deleteAllPhotos()
+            getAllPhotos()
+            collectionView.reloadData()
         } else {
             deleteSelectedPhotos()
         }
     }
     
-    func deleteAllPhotos() {
-        for photo in fetchedResultsController.fetchedObjects as! [Photo] {
-            //photo.imagePath = nil
+    func getAllPhotos() {
+        for _ in 0...20 {
+            let photo = Photo(insertIntoMangedObjectContext: sharedContext)
+            photo.pin = pin
+            
+            Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, imageID, error) -> Void in
+                if let error = error {
+                    print("Image download error: \(error.localizedDescription)")
+                }
+                
+                let filename = imageID + ".jpg"
+                let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+                let pathArray = [dirPath, filename]
+                let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
+                
+                if let data = imageData {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        let image = UIImage(data: data)
+                        photo.imagePath = fileURL.path
+                        photo.image = image
+                        CoreDataStackManager.sharedInstance().saveContext()
+                    }
+                }
+        })
         }
+    }
+    
+    func deleteAllPhotos() {
+        for photo: Photo in fetchedResultsController.fetchedObjects as! [Photo] {
+            sharedContext.deleteObject(photo)
+            CoreDataStackManager.sharedInstance().saveContext()
+        }
+        updateBottomButton()
     }
     
     func deleteSelectedPhotos() {
@@ -239,9 +259,11 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
             photosToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
         }
         
-        for photo in photosToDelete {
-            //photo.imagePath = nil
+        for photo: Photo in photosToDelete {
+            sharedContext.deleteObject(photo)
         }
+        
+        CoreDataStackManager.sharedInstance().saveContext()
         
         selectedIndexes = [NSIndexPath]()
         
@@ -251,8 +273,9 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     func updateBottomButton() {
         if selectedIndexes.count > 0 {
             bottomButton.title = "Remove Selected Photos"
-        } else {
-            bottomButton.title = "Clear All"
+        }
+        else {
+            bottomButton.title = "New Collection"
         }
     }
 }
