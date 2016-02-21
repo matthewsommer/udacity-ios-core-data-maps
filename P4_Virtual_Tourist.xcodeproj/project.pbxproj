@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C90AB2541C7A2DDD0063B721 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = C90AB2531C7A2DDD0063B721 /* README.md */; };
 		C95359201C618F1400A9054E /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C953591F1C618F1400A9054E /* DetailsViewController.swift */; };
 		C95359241C619E7400A9054E /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95359231C619E7400A9054E /* CollectionViewCell.swift */; };
 		C95359261C61A43900A9054E /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95359251C61A43900A9054E /* Pin.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C90AB2531C7A2DDD0063B721 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C953591F1C618F1400A9054E /* DetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		C95359231C619E7400A9054E /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		C95359251C61A43900A9054E /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pin.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				C9A5941E1C0BD8A7006347F9 /* P4_Virtual_TouristTests */,
 				C9A594291C0BD8A7006347F9 /* P4_Virtual_TouristUITests */,
 				C9A594081C0BD8A7006347F9 /* Products */,
+				C90AB2531C7A2DDD0063B721 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -290,6 +293,7 @@
 				C9E513251C62E987007137E9 /* Constants.swift in Sources */,
 				C9E5131C1C62D0E6007137E9 /* CoreDataStackManager.swift in Sources */,
 				C9E513211C62E92A007137E9 /* Flikr.swift in Sources */,
+				C90AB2541C7A2DDD0063B721 /* README.md in Sources */,
 				C9E5131F1C62D3C8007137E9 /* VirtualTourist.xcdatamodeld in Sources */,
 				C95359241C619E7400A9054E /* CollectionViewCell.swift in Sources */,
 				C9E513271C62EA3D007137E9 /* ImageCache.swift in Sources */,
