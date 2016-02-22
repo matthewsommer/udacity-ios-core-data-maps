@@ -57,13 +57,15 @@ class Photo : NSManagedObject {
         let fileURL = NSURL.fileURLWithPathComponents(pathArray)
         return fileURL!
     }
-//    var image: UIImage? {
-//        get {
-//            return Flikr.Caches.imageCache.imageWithIdentifier(imagePath)
-//        }
-//        
-//        set {
-//            Flikr.Caches.imageCache.storeImage(image, withIdentifier: imagePath!)
-//        }
-//    }
+    
+    override func prepareForDeletion() {
+        if let imagePath = self.imagePath {
+            do {
+                try NSFileManager.defaultManager().removeItemAtPath(imagePath)
+            }
+            catch let error as NSError {
+
+            }
+        }
+    }
 }

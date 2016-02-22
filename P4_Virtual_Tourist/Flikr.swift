@@ -212,7 +212,7 @@ class Flikr : NSObject {
     class func sharedInstance() -> Flikr {
         
         struct Singleton {
-            static var sharedInstance = Flikr()
+            static let sharedInstance = Flikr()
         }
         
         return Singleton.sharedInstance

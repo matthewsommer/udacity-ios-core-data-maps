@@ -82,7 +82,6 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
-        print("number Of Cells: \(sectionInfo.numberOfObjects)")
         return sectionInfo.numberOfObjects
     }
     
@@ -101,6 +100,8 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         }
         else if photo.imagePath == nil {
             cell.activityIndicator.startAnimating()
+            
+            //TODO: In-lieu of making many Flikr requests, only one requests should be made to get all the image URLs and images
             let task = Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, imageID, error) -> Void in
                 if let error = error {
                     print("Image download error: \(error.localizedDescription)")
@@ -230,17 +231,9 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         let fileManager = NSFileManager.defaultManager()
         
         for photo: Photo in fetchedResultsController.fetchedObjects as! [Photo] {
-            
-            do {
-                try fileManager.removeItemAtPath(photo.imagePath!)
-            }
-            catch let error as NSError {
-                print("\(error)")
-            }
-            
             sharedContext.deleteObject(photo)
-            CoreDataStackManager.sharedInstance().saveContext()
         }
+        CoreDataStackManager.sharedInstance().saveContext()
         updateBottomButton()
     }
     
@@ -253,12 +246,6 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
         }
         
         for photo: Photo in photosToDelete {
-            do {
-                try fileManager.removeItemAtPath(photo.imagePath!)
-            }
-            catch let error as NSError {
-                print("\(error)")
-            }
             sharedContext.deleteObject(photo)
         }
         

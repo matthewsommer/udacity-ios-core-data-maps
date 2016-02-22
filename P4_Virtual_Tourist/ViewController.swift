@@ -57,7 +57,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        fetchRequest.sortDescriptors = []
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
             managedObjectContext: self.sharedContext,
@@ -66,6 +66,17 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         
         return fetchedResultsController
     }()
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        switch type {
+        case .Insert:
+            self.mapView.addAnnotation(anObject as! Pin)
+        case .Delete:
+            self.mapView.removeAnnotation(anObject as! Pin)
+        default:
+            return
+        }
+    }
     
     func addPin(point: MKPointAnnotation) -> Pin {
         
@@ -121,7 +132,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
         let point = MKPointAnnotation()
         point.coordinate = coordinates
         point.title = String(point.coordinate.longitude) + "," + String(point.coordinate.latitude)
-        self.mapView.addAnnotation(addPin(point))
+        addPin(point)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -134,11 +145,7 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
             performSegueWithIdentifier("showDetail", sender: self)
         }
         else if (editButton.title == "Done"){
-            let temppin = view.annotation! as! Pin
-            temppin.photos = nil
-            sharedContext.deleteObject(temppin)
-            mapView.removeAnnotation(view.annotation!)
-            
+            sharedContext.deleteObject(view.annotation! as! Pin)
             CoreDataStackManager.sharedInstance().saveContext()
         }
     }

@@ -53,4 +53,8 @@ class Pin: NSManagedObject, MKAnnotation {
             return locationCoordinate
         }
     }
+    
+    override func prepareForDeletion() {
+
+    }
 }
