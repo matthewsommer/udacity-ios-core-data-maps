@@ -94,37 +94,10 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     func configureCell(cell: CollectionViewCell, atIndexPath indexPath: NSIndexPath) {
         let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         cell.imageView.image = UIImage(named: "LaunchImage")
+        cell.activityIndicator.startAnimating()
         if photo.imagePath != nil {
             cell.imageView.image = photo.image
             cell.activityIndicator.stopAnimating()
-        }
-        else if photo.imagePath == nil {
-            cell.activityIndicator.startAnimating()
-            
-            //TODO: In-lieu of making many Flikr requests, only one requests should be made to get all the image URLs and images
-            let task = Flikr.taskRandomFlikrImage(pin.coordinate, completionHandler: { (imageData, imageID, error) -> Void in
-                if let error = error {
-                    print("Image download error: \(error.localizedDescription)")
-                }
-                
-                if let data = imageData {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        let filename = imageID + ".jpg"
-                        let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-                        let pathArray = [dirPath, filename]
-                        let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
-                        photo.imagePath = fileURL.path
-                        
-                        let image = UIImage(data: data)
-                        UIImageJPEGRepresentation(image!, 100)!.writeToFile(fileURL.path!, atomically: true)
-                        cell.imageView.image = photo.image
-                    }
-                }
-                CoreDataStackManager.sharedInstance().saveContext()
-                cell.activityIndicator.stopAnimating()
-            })
-            
-            cell.taskToCancelifCellIsReused = task
         }
         
         if let _ = selectedIndexes.indexOf(indexPath) {
@@ -228,8 +201,6 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     }
     
     func deleteAllPhotos() {
-        let fileManager = NSFileManager.defaultManager()
-        
         for photo: Photo in fetchedResultsController.fetchedObjects as! [Photo] {
             sharedContext.deleteObject(photo)
         }
@@ -238,7 +209,6 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
     }
     
     func deleteSelectedPhotos() {
-        let fileManager = NSFileManager.defaultManager()
         var photosToDelete = [Photo]()
         
         for indexPath in selectedIndexes {
