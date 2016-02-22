@@ -103,16 +103,13 @@ class ViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsContr
                     let fileURL =  NSURL.fileURLWithPathComponents(pathArray)!
                     
                     if let data = imageData {
-                        dispatch_async(dispatch_get_main_queue()) {
-                            let image = UIImage(data: data)
-                            UIImageJPEGRepresentation(image!, 100)!.writeToFile(fileURL.path!, atomically: true)
-                            photo.imagePath = fileURL.path
-                        }
+                        let image = UIImage(data: data)
+                        UIImageJPEGRepresentation(image!, 100)!.writeToFile(fileURL.path!, atomically: true)
+                        photo.imagePath = fileURL.path
                     }
+                    CoreDataStackManager.sharedInstance().saveContext()
                 })
             }
-        
-            CoreDataStackManager.sharedInstance().saveContext()
         
         return pin
     }

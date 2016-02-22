@@ -100,10 +100,10 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
             cell.activityIndicator.stopAnimating()
         }
         
+        cell.viewSelectedMask.alpha = 1.0
+        
         if let _ = selectedIndexes.indexOf(indexPath) {
             cell.viewSelectedMask.alpha = 0.3
-        } else {
-            cell.viewSelectedMask.alpha = 1.0
         }
     }
     
@@ -117,10 +117,10 @@ class DetailsViewController: UIViewController, MKMapViewDelegate, UICollectionVi
             selectedIndexes.append(indexPath)
         }
         
+        cell.viewSelectedMask.alpha = 1.0
+        
         if let _ = selectedIndexes.indexOf(indexPath) {
             cell.viewSelectedMask.alpha = 0.3
-        } else {
-            cell.viewSelectedMask.alpha = 1.0
         }
         
         updateBottomButton()
